@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOC – Sociedad Ornitológica de Córdoba</title>
+  <meta name="description" content="Sociedad Ornitológica de Córdoba — Protegemos las aves más amenazadas del Caribe colombiano con ciencia rigurosa, restauración de bosques y comunidades guardianas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f0f6f8;
+      --bg2:         #e2edf3;
+      --surface:     #ffffff;
+      --border:      rgba(0,0,0,.08);
+
+      /* SOC brand — teal primary */
+      --green:       #17596E;
+      --green-mid:   #1f7a98;
+      --green-pale:  #daeef5;
+      --green-dim:   rgba(23,89,110,.07);
+
+      /* SOC brand — maroon secondary ("SOC" text color) */
+      --maroon:      #7A2C38;
+      --maroon-mid:  #9b3a48;
+
+      /* SOC warm accent (bird belly orange) */
+      --orange:      #E07828;
+
+      /* SOC highlight (lighter teal) */
+      --accent:      #4AA8C2;
+
+      --dark:        #0c1b24;
+      --muted:       rgba(12,27,36,.46);
+      --sand:        #f0ebe2;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── PROGRESS ── */
+    #progress {
+      position: fixed; top: 0; left: 0; z-index: 999;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--green), var(--accent));
+      transition: width .1s;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 3rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(240,246,248,.93);
+      backdrop-filter: blur(24px) saturate(160%);
+    }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; }
+    .nav-logo img { height: 38px; width: auto; display: block; }
+    .nav-links { display: flex; align-items: center; gap: .15rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: .82rem; font-weight: 500; letter-spacing: .02em;
+      padding: .45rem .9rem; border-radius: 50px;
+      transition: color .2s, background .2s;
+    }
+    .nav-links a:hover { color: var(--dark); background: var(--green-dim); }
+    .nav-cta {
+      background: var(--maroon) !important; color: #fff !important;
+      font-weight: 700 !important; border-radius: 50px;
+      padding: .5rem 1.3rem !important; transition: background .2s !important;
+    }
+    .nav-cta:hover { background: var(--maroon-mid) !important; }
+
+    /* ── HAMBURGER ── */
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      cursor: pointer; padding: .4rem; border: none; background: none; z-index: 300;
+    }
+    .ham-line { width: 24px; height: 2px; background: var(--dark); border-radius: 2px; transition: transform .3s, opacity .3s; }
+    .hamburger.open .ham-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open .ham-line:nth-child(2) { opacity: 0; }
+    .hamburger.open .ham-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      position: fixed; inset: 0; z-index: 190;
+      background: rgba(240,246,248,.97); backdrop-filter: blur(24px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem; opacity: 0; pointer-events: none; transition: opacity .35s;
+    }
+    .mobile-menu.open { opacity: 1; pointer-events: all; }
+    .mobile-menu a { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 800; color: var(--dark); text-decoration: none; transition: color .2s; }
+    .mobile-menu a:hover { color: var(--green); }
+    .mobile-menu .mm-donate { background: var(--maroon); color: #fff !important; padding: .7rem 2rem; border-radius: 50px; font-size: 1.1rem !important; }
+    .mobile-menu .mm-donate:hover { background: var(--maroon-mid) !important; }
+
+    /* ════════════════════════════════════
+       HERO CAMERA TRAP
+    ════════════════════════════════════ */
+    .hero-camera {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-top: 62px; /* nav height */
+    }
+
+    /* Forest background */
+    .hc-bg {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .hc-bg img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: saturate(0.55) brightness(0.42);
+    }
+    .hc-bg-veil {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 80% at 50% 40%, rgba(10,26,18,.3) 0%, transparent 70%),
+        linear-gradient(to bottom, rgba(6,16,12,.25) 0%, rgba(6,16,12,.7) 100%);
+    }
+
+    /* Top bar */
+    .hc-topbar {
+      position: relative; z-index: 2;
+      display: flex; justify-content: center; align-items: center;
+      padding: 1.4rem 4rem 0;
+    }
+    .hc-topbar-label {
+      font-size: .68rem; font-weight: 700; letter-spacing: .22em;
+      text-transform: uppercase; color: rgba(255,255,255,.45);
+    }
+
+    /* Camera panels grid */
+    .hc-cameras {
+      position: relative; z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1.55fr 1fr;
+      gap: 1.6rem;
+      padding: 0 4rem;
+      flex: 1;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    /* Each camera column */
+    .hc-cam {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* Camera label chip */
+    .hc-cam-label {
+      font-size: .63rem; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 50px; padding: .28rem .85rem;
+      background: rgba(6,16,12,.5);
+      backdrop-filter: blur(10px);
+      align-self: flex-start;
+      margin-left: .5rem;
+    }
+    .hc-cam-center .hc-cam-label { align-self: center; margin-left: 0; }
+    .hc-cam-right .hc-cam-label  { align-self: flex-end; margin-left: 0; margin-right: .5rem; }
+
+    /* Dashed connector line */
+    .hc-dash {
+      width: 1px;
+      height: 28px;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.35) 0, rgba(255,255,255,.35) 3px,
+        transparent 3px, transparent 7px
+      );
+      flex-shrink: 0;
+    }
+
+    /* Photo frame */
+    .hc-frame {
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 24px 64px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.3);
+      background: #0a1810;
+      aspect-ratio: 4/3;
+    }
+    .hc-frame img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+
+    /* Center frame — taller, more prominent */
+    .hc-cam-center .hc-frame {
+      border-radius: 22px;
+      aspect-ratio: auto;
+      height: 420px;
+      border: 1.5px solid rgba(255,255,255,.2);
+      box-shadow: 0 32px 80px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.06);
+    }
+
+    /* Viewfinder UI overlay */
+    .hc-viewfinder {
+      position: absolute; inset: 0; z-index: 3; pointer-events: none;
+    }
+    .vf-corner { position: absolute; width: 18px; height: 18px; border-color: rgba(255,255,255,.75); border-style: solid; }
+    .vf-tl { top: 14px; left: 14px; border-width: 2px 0 0 2px; }
+    .vf-tr { top: 14px; right: 14px; border-width: 2px 2px 0 0; }
+    .vf-bl { bottom: 52px; left: 14px; border-width: 0 0 2px 2px; }
+    .vf-br { bottom: 52px; right: 14px; border-width: 0 2px 2px 0; }
+    .vf-cross-h {
+      position: absolute; top: 50%; left: 0; right: 0; height: 1px;
+      background: rgba(255,255,255,.07); transform: translateY(-50%);
+    }
+    .vf-cross-v {
+      position: absolute; top: 0; bottom: 0; left: 50%; width: 1px;
+      background: rgba(255,255,255,.07); transform: translateX(-50%);
+    }
+    /* Active scan line */
+    .vf-scan {
+      position: absolute; left: 0; right: 0; height: 1.5px; z-index: 4;
+      background: linear-gradient(to right, transparent, rgba(74,168,194,.55), transparent);
+      animation: vfScan 5s linear infinite;
+    }
+    @keyframes vfScan { 0%{top:0%} 100%{top:100%} }
+
+    /* Badges row at bottom of center frame */
+    .hc-badges {
+      position: absolute; bottom: 12px; left: 12px; right: 12px;
+      display: flex; gap: .4rem; z-index: 5; flex-wrap: wrap;
+    }
+    .hc-badge {
+      font-size: .58rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+      padding: .25rem .7rem; border-radius: 50px;
+      background: rgba(6,16,12,.78); backdrop-filter: blur(10px);
+      color: rgba(255,255,255,.55);
+      border: 1px solid rgba(255,255,255,.12);
+      display: flex; align-items: center; gap: .35rem;
+    }
+    .hc-badge-id {
+      color: #5fce80;
+      border-color: rgba(95,206,128,.3);
+      background: rgba(95,206,128,.1);
+    }
+    .hc-badge-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: #5fce80;
+      animation: dotpulse 1.4s ease-in-out infinite;
+    }
+    @keyframes dotpulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.7);} }
+
+    /* Species label on side frames */
+    .hc-species-tag {
+      position: absolute; bottom: 10px; left: 10px; z-index: 4;
+      font-size: .62rem; font-style: italic; color: rgba(255,255,255,.75);
+      font-weight: 600; letter-spacing: .03em;
+      background: rgba(6,16,12,.6); backdrop-filter: blur(6px);
+      padding: .22rem .65rem; border-radius: 6px;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    /* Bottom text row */
+    .hc-bottom {
+      position: relative; z-index: 2;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2rem; padding: 1.5rem 4rem 3rem;
+      align-items: flex-end;
+    }
+    .hc-eyebrow {
+      font-size: .68rem; font-weight: 600; letter-spacing: .22em;
+      text-transform: uppercase; color: rgba(255,255,255,.45);
+      display: block; margin-bottom: .75rem;
+    }
+    .hc-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(3.2rem, 6.5vw, 6rem);
+      font-weight: 900; line-height: 1.0;
+      letter-spacing: -.03em; color: #fff;
+    }
+    .hc-right { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .hc-desc {
+      font-size: .97rem; color: rgba(255,255,255,.58);
+      line-height: 1.72; max-width: 370px; font-weight: 300;
+    }
+    .hc-read {
+      font-size: .85rem; font-weight: 600; color: rgba(255,255,255,.85);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,.3);
+      padding-bottom: .18rem;
+      transition: border-color .2s, color .2s;
+      letter-spacing: .02em;
+    }
+    .hc-read:hover { color: #fff; border-color: #fff; }
+    .hc-dot-nav { display: flex; gap: .45rem; margin-top: .5rem; }
+    .hc-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,.22); transition: background .3s;
+    }
+    .hc-dot.active { background: rgba(255,255,255,.8); }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      overflow: hidden; background: var(--surface); padding: .9rem 0;
+    }
+    .marquee-track { display: flex; animation: marquee 30s linear infinite; width: max-content; }
+    .marquee-item {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0 2.5rem; white-space: nowrap;
+      font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    }
+    .msep { color: var(--green); }
+    @keyframes marquee { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+    /* ── SPOTLIGHT ── */
+    .spotlight {
+      position: relative; min-height: 88vh;
+      display: flex; align-items: center; overflow: hidden; padding: 0;
+    }
+    .spotlight-media { position: absolute; inset: 0; z-index: 0; }
+    .spotlight-media img { width: 100%; height: 100%; object-fit: cover; }
+    .spotlight-veil {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(110deg, rgba(5,13,8,.94) 0%, rgba(5,13,8,.80) 38%, rgba(5,13,8,.45) 65%, rgba(5,13,8,.15) 100%);
+    }
+    .spotlight-content {
+      position: relative; z-index: 2;
+      max-width: 1220px; margin: 0 auto; padding: 7rem 5rem;
+      display: grid; grid-template-columns: 1.2fr auto; gap: 4rem; align-items: center; width: 100%;
+    }
+    .spotlight-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(122,44,56,.18); border: 1px solid rgba(122,44,56,.4);
+      border-radius: 50px; padding: .3rem .9rem .3rem .45rem;
+      font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: #e08090; margin-bottom: 1.5rem; width: fit-content;
+    }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #e08090; flex-shrink: 0; }
+    .spotlight-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 900; line-height: 1.0;
+      letter-spacing: -.03em; color: #fff; margin-bottom: .5rem;
+    }
+    .spotlight-title em { color: var(--accent); font-style: italic; }
+    .spotlight-sci { font-size: .92rem; color: rgba(255,255,255,.42); font-style: italic; margin-bottom: 1.6rem; letter-spacing: .04em; }
+    .spotlight-desc { font-size: 1.05rem; color: rgba(255,255,255,.68); line-height: 1.78; max-width: 520px; margin-bottom: 2.2rem; font-weight: 300; }
+    .spotlight-stats {
+      display: flex; flex-direction: column; gap: 0;
+      background: rgba(5,13,8,.65); backdrop-filter: blur(16px);
+      border: 1px solid rgba(74,168,194,.2); border-radius: 24px; overflow: hidden; min-width: 210px;
+    }
+    .sp-stat { padding: 1.5rem 2rem; border-bottom: 1px solid rgba(74,168,194,.12); text-align: center; }
+    .sp-stat:last-child { border-bottom: none; }
+    .sp-num { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 800; color: var(--accent); display: block; line-height: 1; }
+    .sp-lbl { font-size: .68rem; color: rgba(255,255,255,.42); margin-top: .35rem; display: block; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+
+    /* ── BASE ── */
+    section { padding: 4.5rem 5rem; position: relative; z-index: 1; }
+    .container { max-width: 1220px; margin: 0 auto; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .68rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 1rem;
+    }
+    .eyebrow::before { content: ''; display: block; width: 22px; height: 1.5px; background: var(--green); border-radius: 2px; }
+    h2.st {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.2rem, 3.8vw, 3.4rem); font-weight: 800;
+      line-height: 1.05; letter-spacing: -.025em; margin-bottom: 1.1rem; color: var(--dark);
+    }
+    .lead { font-size: 1rem; color: var(--muted); line-height: 1.78; font-weight: 300; }
+
+    /* ── DATA STRIP ── */
+    .data-strip { background: var(--green); padding: 2.8rem 5rem; }
+    .ds-grid { max-width: 1220px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; }
+    .ds-item { display: flex; align-items: center; gap: 1.2rem; }
+    .ds-icon { font-size: 1.8rem; flex-shrink: 0; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.15); border-radius: 14px; }
+    .ds-num { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 800; color: #fff; line-height: 1; display: block; }
+    .ds-label { font-size: .78rem; color: rgba(255,255,255,.72); margin-top: .25rem; line-height: 1.4; font-weight: 500; display: block; }
+
+    /* ── ABOUT ── */
+    .about { background: var(--surface); }
+    .about-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .about-text .lead { max-width: 420px; margin-bottom: 1.8rem; }
+    .big-stats { display: flex; gap: 3rem; flex-wrap: wrap; }
+    .bs-item .num { font-family: 'Fraunces', serif; font-size: 3.2rem; font-weight: 800; color: var(--green); line-height: 1; display: block; }
+    .bs-item .lbl { font-size: .78rem; color: var(--muted); margin-top: .25rem; }
+    .pillars { display: flex; flex-direction: column; }
+    .pil { display: flex; align-items: flex-start; gap: 1.2rem; padding: 1.4rem 1.6rem; border: 1px solid var(--border); background: var(--bg); cursor: default; transition: background .2s, border-color .2s; }
+    .pil:first-child { border-radius: 18px 18px 0 0; }
+    .pil:last-child  { border-radius: 0 0 18px 18px; }
+    .pil + .pil { border-top: none; }
+    .pil:hover { background: var(--green-pale); border-color: rgba(23,89,110,.2); }
+    .pil-ico { width: 42px; height: 42px; border-radius: 12px; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
+    .pil-title { font-size: .93rem; font-weight: 700; margin-bottom: .25rem; color: var(--dark); }
+    .pil-desc  { font-size: .8rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── IMPACT ── */
+    .impact { background: var(--dark); overflow: hidden; position: relative; }
+    .impact::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(23,89,110,.35) 0%, transparent 60%), radial-gradient(ellipse 40% 60% at 10% 50%, rgba(74,168,194,.1) 0%, transparent 55%);
+    }
+    .impact-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .impact-copy .eyebrow { color: var(--accent); }
+    .impact-copy .eyebrow::before { background: var(--accent); }
+    .impact-copy .st { color: #fff; }
+    .impact-copy .lead { color: rgba(255,255,255,.55); margin-bottom: 2rem; }
+    .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,.06); border-radius: 20px; overflow: hidden; }
+    .impact-cell { padding: 2rem 1.8rem; background: rgba(255,255,255,.03); transition: background .25s; }
+    .impact-cell:hover { background: rgba(23,89,110,.18); }
+    .impact-num { font-family: 'Fraunces', serif; font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: .4rem; }
+    .impact-label { font-size: .82rem; color: rgba(255,255,255,.5); line-height: 1.5; }
+    .bar-list { display: flex; flex-direction: column; gap: 1.4rem; margin-top: .5rem; }
+    .bar-header { display: flex; justify-content: space-between; margin-bottom: .5rem; }
+    .bar-name { font-size: .82rem; font-weight: 500; color: rgba(255,255,255,.7); }
+    .bar-val  { font-size: .82rem; font-weight: 700; color: var(--accent); }
+    .bar-track { height: 4px; border-radius: 99px; background: rgba(255,255,255,.1); overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--green), var(--accent)); transform: scaleX(0); transform-origin: left; transition: transform 1.2s cubic-bezier(.16,1,.3,1); }
+    .bar-fill.filled { transform: scaleX(1); }
+
+    /* ── PROJECTS BENTO ── */
+    .projects { background: var(--bg2); }
+    .bento { display: grid; grid-template-columns: repeat(12,1fr); grid-auto-rows: 220px; gap: 1rem; margin-top: 2rem; }
+    .bc { border-radius: 20px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,.08); background: var(--dark); display: flex; flex-direction: column; justify-content: flex-end; padding: 0; box-shadow: 0 4px 16px rgba(0,0,0,.15); transition: transform .3s, box-shadow .3s; cursor: default; }
+    .bc:hover { transform: translateY(-4px); box-shadow: 0 20px 56px rgba(0,0,0,.25); }
+    .bc-1{grid-column:span 5;grid-row:span 2;} .bc-2{grid-column:span 4;} .bc-3{grid-column:span 3;} .bc-4{grid-column:span 3;} .bc-5{grid-column:span 4;} .bc-6{grid-column:span 5;}
+    /* Photo layer */
+    .bc-photo { position: absolute; inset: 0; z-index: 0; }
+    .bc-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+    .bc:hover .bc-photo img { transform: scale(1.07); }
+    /* Dark gradient overlay — strong at bottom for text readability */
+    .bc-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to top, rgba(10,22,30,.97) 0%, rgba(10,22,30,.72) 38%, rgba(10,22,30,.28) 65%, rgba(10,22,30,.08) 100%);
+    }
+    .bc-1 .bc-overlay {
+      background: linear-gradient(to top, rgba(10,22,30,.95) 0%, rgba(10,22,30,.6) 40%, rgba(10,22,30,.22) 70%, rgba(10,22,30,.05) 100%);
+    }
+    /* Content wrapper above photo + overlay */
+    .bc-content { position: relative; z-index: 3; padding: 1.6rem; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+    .bc-tag { display: inline-block; padding: .22rem .65rem; border-radius: 50px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.1); backdrop-filter: blur(6px); font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.75); margin-bottom: .65rem; width: fit-content; }
+    .bc-name { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 800; letter-spacing: -.01em; color: #fff; margin-bottom: .3rem; line-height: 1.2; }
+    .bc-1 .bc-name { font-size: 1.7rem; }
+    .bc-sci { font-size: .76rem; color: rgba(255,255,255,.48); font-style: italic; margin-bottom: .55rem; }
+    .bc-text { font-size: .79rem; color: rgba(255,255,255,.62); line-height: 1.6; }
+    .bc-link { display: inline-flex; align-items: center; gap: .3rem; font-size: .78rem; font-weight: 700; color: var(--accent); margin-top: .75rem; text-decoration: none; transition: gap .2s, color .2s; }
+    .bc-link:hover { gap: .55rem; color: #fff; }
+
+    /* ── METHODOLOGY ── */
+    .method { background: var(--surface); }
+    .method-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; margin-top: 2rem; }
+    .mcard { padding: 2rem 1.8rem; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); position: relative; transition: background .25s, border-color .25s; cursor: default; }
+    .mcard:hover { background: var(--green-pale); border-color: rgba(23,89,110,.2); }
+    .mcard-num { font-family: 'Fraunces', serif; font-size: 3.5rem; font-weight: 800; color: rgba(23,89,110,.1); line-height: 1; margin-bottom: .8rem; transition: color .25s; }
+    .mcard:hover .mcard-num { color: rgba(23,89,110,.2); }
+    .mcard-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .mcard-title { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: .5rem; }
+    .mcard-desc  { font-size: .82rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── ACTIVITIES ── */
+    .activities { background: var(--bg2); }
+    .act-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2rem; }
+    .act-cell {
+      border-radius: 20px; overflow: hidden; position: relative;
+      min-height: 290px; display: flex; flex-direction: column; justify-content: flex-end;
+      border: 1px solid rgba(255,255,255,.07);
+      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      background: var(--dark);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .act-cell:hover { transform: translateY(-4px); box-shadow: 0 20px 52px rgba(0,0,0,.22); }
+    .act-photo { position: absolute; inset: 0; z-index: 0; }
+    .act-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+    .act-cell:hover .act-photo img { transform: scale(1.06); }
+    .act-photo-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to top, rgba(10,22,30,.97) 0%, rgba(10,22,30,.7) 45%, rgba(10,22,30,.22) 100%);
+    }
+    .act-content { position: relative; z-index: 2; padding: 1.8rem; }
+    .act-num { font-family: 'Fraunces', serif; font-size: .7rem; font-weight: 700; color: var(--accent); letter-spacing: .14em; margin-bottom: .8rem; }
+    .act-ico {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(255,255,255,.1); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem; color: rgba(255,255,255,.85);
+    }
+    .act-title { font-size: .97rem; font-weight: 700; color: #fff; margin-bottom: .45rem; }
+    .act-desc  { font-size: .8rem; color: rgba(255,255,255,.6); line-height: 1.65; }
+
+    /* ── GALLERY ── */
+    .gallery { background: var(--bg2); }
+    .gallery-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .gal-grid { display: grid; grid-template-columns: repeat(4,1fr); grid-template-rows: 200px 200px; gap: 1rem; }
+    .gal-item { border-radius: 16px; overflow: hidden; position: relative; background: var(--bg); transition: transform .3s; }
+    .gal-item:hover { transform: scale(1.02); }
+    .gal-item:hover .gal-label { opacity: 1; transform: translateY(0); }
+    .gi-1{grid-column:span 2;grid-row:span 2;} .gi-2,.gi-3,.gi-4,.gi-5{grid-column:span 1;}
+    .gal-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .gal-item:hover img { transform: scale(1.06); }
+    .gal-label { position: absolute; bottom: 0; left: 0; right: 0; padding: .8rem 1rem; background: linear-gradient(to top,rgba(12,27,36,.75) 0%,transparent 100%); color: #fff; font-size: .78rem; font-weight: 600; opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .25s; }
+    .gal-more { display: inline-flex; align-items: center; gap: .4rem; font-size: .83rem; font-weight: 600; color: var(--green); text-decoration: none; padding: .55rem 1.2rem; border: 1.5px solid rgba(23,89,110,.3); border-radius: 50px; transition: background .2s, border-color .2s; }
+    .gal-more:hover { background: var(--green-pale); border-color: var(--green); }
+
+    /* ── BLOG ── */
+    .blog { background: var(--surface); }
+    .blog-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .blog-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .blog-card { border-radius: 20px; overflow: hidden; border: 1px solid var(--border); background: var(--bg); box-shadow: 0 2px 8px rgba(0,0,0,.04); transition: transform .25s, box-shadow .25s; }
+    .blog-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.09); }
+    .blog-thumb { height: 200px; overflow: hidden; position: relative; }
+    .blog-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .blog-card:hover .blog-thumb img { transform: scale(1.06); }
+    .blog-body { padding: 1.4rem; }
+    .blog-meta { display: flex; align-items: center; gap: .75rem; font-size: .72rem; color: var(--muted); margin-bottom: .9rem; }
+    .blog-category { background: var(--green-pale); color: var(--green); padding: .2rem .6rem; border-radius: 50px; font-weight: 700; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; }
+    .blog-title { font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 800; color: var(--dark); line-height: 1.3; margin-bottom: .6rem; }
+    .blog-excerpt { font-size: .8rem; color: var(--muted); line-height: 1.65; }
+    .blog-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .blog-author { font-size: .76rem; color: var(--muted); font-weight: 500; }
+    .blog-read { font-size: .76rem; font-weight: 700; color: var(--green); text-decoration: none; }
+    .blog-read:hover { text-decoration: underline; }
+
+    /* ── TEAM ── */
+    .team { background: var(--bg); }
+    .team-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; margin-top: 2rem; }
+    .team-card { border-radius: 20px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,.04); transition: transform .25s, box-shadow .25s; }
+    .team-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.09); }
+    .team-avatar { height: 220px; overflow: hidden; position: relative; }
+    .team-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform .4s ease; display: block; }
+    .team-card:hover .team-avatar img { transform: scale(1.04); }
+    .team-info { padding: 1.3rem; }
+    .team-name  { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 800; color: var(--dark); margin-bottom: .2rem; }
+    .team-role  { font-size: .78rem; color: var(--green); font-weight: 600; margin-bottom: .5rem; }
+    .team-bio   { font-size: .78rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── ALLIES ── */
+    .allies { background: var(--surface); }
+    .allies-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .allies-wrap .lead { max-width: 500px; margin: .8rem auto 2.5rem; }
+    .allies-row { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; }
+    .ally-chip { display: flex; align-items: center; gap: .5rem; background: var(--bg); border: 1px solid var(--border); border-radius: 50px; padding: .55rem 1.3rem; font-size: .82rem; font-weight: 600; color: var(--dark); box-shadow: 0 1px 4px rgba(0,0,0,.04); transition: background .2s, border-color .2s; }
+    .ally-chip:hover { background: var(--green-pale); border-color: rgba(23,89,110,.25); color: var(--green); }
+    .ally-emoji { font-size: 1.1rem; }
+
+    /* ── RESERVE CTA ── */
+    .reserve { background: var(--dark); padding: 4.5rem 5rem; position: relative; overflow: hidden; }
+    .reserve::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 50% 80% at 5% 50%,rgba(23,89,110,.3) 0%,transparent 55%), radial-gradient(ellipse 40% 60% at 95% 60%,rgba(74,168,194,.12) 0%,transparent 50%); }
+    .reserve-inner { max-width: 1220px; margin: 0 auto; position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: center; }
+    .reserve-text .eyebrow { color: var(--accent); }
+    .reserve-text .eyebrow::before { background: var(--accent); }
+    .reserve-title { font-family: 'Fraunces', serif; font-size: clamp(2.2rem,4vw,3.6rem); font-weight: 800; line-height: 1.05; letter-spacing: -.03em; color: #fff; margin-bottom: 1.2rem; }
+    .reserve-title span { color: var(--accent); }
+    .reserve-desc { font-size: 1rem; color: rgba(255,255,255,.5); line-height: 1.75; margin-bottom: 2rem; }
+    .reserve-btns { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .btn { padding: .82rem 1.9rem; border-radius: 50px; font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; transition: transform .2s, box-shadow .2s, background .2s; border: none; }
+    .btn-dark  { background: var(--dark); color: #fff; }
+    .btn-dark:hover { background: var(--green); transform: translateY(-2px); }
+    .btn-white { background: #fff; color: var(--dark); }
+    .btn-white:hover { background: var(--green-pale); transform: translateY(-2px); }
+    .btn-outline-w { background: transparent; border: 1.5px solid rgba(255,255,255,.22); color: rgba(255,255,255,.7); }
+    .btn-outline-w:hover { border-color: rgba(255,255,255,.6); color: #fff; }
+    .reserve-features { display: flex; flex-direction: column; gap: 1rem; }
+    .rf { display: flex; align-items: center; gap: 1rem; padding: 1.2rem 1.5rem; border-radius: 16px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); transition: background .2s; }
+    .rf:hover { background: rgba(23,89,110,.2); }
+    .rf-ico { font-size: 1.4rem; flex-shrink: 0; }
+    .rf-title { font-weight: 600; color: rgba(255,255,255,.9); font-size: .9rem; }
+    .rf-desc  { font-size: .78rem; color: rgba(255,255,255,.4); margin-top: .15rem; }
+
+    /* ── FAQ ── */
+    .faq { background: var(--bg); }
+    .faq-wrap { display: grid; grid-template-columns: 1fr 1.6fr; gap: 4rem; align-items: start; }
+    .faq-list { display: flex; flex-direction: column; gap: .6rem; }
+    .faq-item { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); overflow: hidden; }
+    .faq-q { width: 100%; text-align: left; padding: 1.2rem 1.5rem; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: 'Inter', sans-serif; font-size: .92rem; font-weight: 600; color: var(--dark); gap: 1rem; transition: background .2s; }
+    .faq-q:hover { background: var(--green-dim); }
+    .faq-icon { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .8rem; flex-shrink: 0; color: var(--green); transition: transform .3s, background .2s; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--green-pale); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+    .faq-item.open .faq-a { max-height: 200px; }
+    .faq-a-inner { padding: 0 1.5rem 1.2rem; font-size: .84rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── NEWSLETTER ── */
+    .newsletter { background: var(--dark); border-top: 1px solid rgba(255,255,255,.05); padding: 4.5rem 5rem; }
+    .nl-inner { max-width: 1220px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+    .nl-eyebrow { color: var(--accent) !important; }
+    .nl-eyebrow::before { background: var(--accent) !important; }
+    .nl-title { font-family: 'Fraunces', serif; font-size: clamp(1.6rem,2.8vw,2.4rem); font-weight: 800; color: #fff; line-height: 1.12; margin-bottom: .7rem; letter-spacing: -.02em; }
+    .nl-desc { font-size: .9rem; color: rgba(255,255,255,.38); line-height: 1.7; }
+    .nl-form { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .nl-input { flex: 1; min-width: 200px; padding: .9rem 1.3rem; border-radius: 50px; border: 1.5px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); font-family: 'Inter', sans-serif; font-size: .9rem; color: #fff; outline: none; transition: border-color .2s; }
+    .nl-input::placeholder { color: rgba(255,255,255,.28); }
+    .nl-input:focus { border-color: var(--accent); }
+    .nl-btn { padding: .9rem 2rem; border-radius: 50px; background: var(--green); color: #fff; font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 700; border: none; cursor: pointer; transition: background .2s, transform .2s; white-space: nowrap; }
+    .nl-btn:hover { background: var(--green-mid); transform: translateY(-2px); }
+
+    /* ── CONTACT ── */
+    .contact { background: var(--surface); }
+    .contact-wrap { display: grid; grid-template-columns: 1fr 1.1fr; gap: 3.5rem; }
+    .cinfo-stack { display: flex; flex-direction: column; gap: .7rem; margin-top: 1.8rem; }
+    .cinfo-row { display: flex; align-items: center; gap: 1rem; padding: 1.1rem 1.4rem; border-radius: 14px; border: 1px solid var(--border); background: var(--bg); box-shadow: 0 1px 4px rgba(0,0,0,.04); transition: border-color .2s, background .2s; }
+    .cinfo-row:hover { border-color: rgba(23,89,110,.3); background: var(--green-pale); }
+    .cinfo-ico { width: 40px; height: 40px; border-radius: 10px; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .cinfo-lbl { font-size: .67rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .cinfo-val { font-size: .9rem; font-weight: 500; color: var(--dark); }
+    .cinfo-val a { color: var(--dark); text-decoration: none; }
+    .cinfo-val a:hover { color: var(--green); }
+    .social-row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .sc-chip { padding: .5rem 1.1rem; border-radius: 50px; border: 1.5px solid var(--border); background: var(--bg); font-size: .79rem; font-weight: 600; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: .4rem; transition: all .2s; }
+    .sc-chip:hover { border-color: var(--green); color: var(--green); background: var(--green-pale); }
+    .form-box { background: var(--bg); border: 1px solid var(--border); border-radius: 24px; padding: 2.6rem; box-shadow: 0 4px 20px rgba(0,0,0,.05); }
+    .form-title { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; color: var(--dark); margin-bottom: 1.8rem; }
+    .fg { margin-bottom: 1rem; }
+    .fg label { display: block; font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .4rem; }
+    .fg input, .fg textarea, .fg select { width: 100%; padding: .8rem 1rem; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface); font-family: 'Inter', sans-serif; font-size: .9rem; color: var(--dark); outline: none; transition: border-color .2s; -webkit-appearance: none; }
+    .fg input::placeholder, .fg textarea::placeholder { color: rgba(12,27,36,.25); }
+    .fg input:focus, .fg textarea:focus, .fg select:focus { border-color: var(--green); }
+    .fg textarea { resize: vertical; min-height: 100px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn-submit { width: 100%; padding: .92rem; background: var(--maroon); color: #fff; border: none; border-radius: 50px; font-family: 'Inter', sans-serif; font-size: .92rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .2s; }
+    .btn-submit:hover { background: var(--maroon-mid); transform: translateY(-2px); }
+
+    /* ── FOOTER ── */
+    footer { background: var(--dark); border-top: 1px solid rgba(255,255,255,.05); padding: 3.5rem 5rem 2rem; }
+    .footer-top { max-width: 1220px; margin: 0 auto; display: grid; grid-template-columns: 2.2fr 1fr 1fr 1fr; gap: 4rem; padding-bottom: 2.5rem; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .footer-logo-img { height: 48px; width: auto; display: block; margin-bottom: 1rem; filter: brightness(0) invert(1) opacity(.7); }
+    .footer-desc { font-size: .84rem; color: rgba(255,255,255,.38); line-height: 1.75; margin-bottom: 1.5rem; }
+    .footer-socials { display: flex; gap: .5rem; }
+    .footer-social { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; font-size: .9rem; transition: background .2s, border-color .2s; }
+    .footer-social:hover { background: var(--green); border-color: var(--green); }
+    .footer-col h5 { font-size: .68rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.28); margin-bottom: 1.2rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .65rem; }
+    .footer-col a { font-size: .84rem; color: rgba(255,255,255,.42); text-decoration: none; transition: color .2s; }
+    .footer-col a:hover { color: var(--accent); }
+    .footer-bottom { max-width: 1220px; margin: 2rem auto 0; display: flex; justify-content: space-between; align-items: center; font-size: .75rem; color: rgba(255,255,255,.22); flex-wrap: wrap; gap: .5rem; }
+    .footer-bottom a { color: var(--accent); text-decoration: none; }
+
+    /* ── SVG ICONS ── */
+    .ico {
+      display: block; width: 100%; height: 100%;
+      fill: none; stroke: currentColor;
+      stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .pil-ico  { color: var(--green); }
+    .mcard-icon { display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; margin-bottom: 1rem; color: var(--green); }
+    .act-ico  { color: var(--green); }
+    .cinfo-ico { color: var(--green); }
+    .rf-ico   { color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 0; }
+    .rf-ico svg { width: 22px; height: 22px; }
+    .ds-icon  { color: rgba(255,255,255,.88); }
+    .ds-icon svg { width: 26px; height: 26px; }
+
+    /* ── FLOATING DONATE ── */
+    .float-donate { position: fixed; bottom: 2rem; right: 2rem; z-index: 180; background: var(--maroon); color: #fff; padding: .78rem 1.6rem; border-radius: 50px; font-family: 'Inter', sans-serif; font-size: .85rem; font-weight: 700; text-decoration: none; box-shadow: 0 8px 24px rgba(122,44,56,.45), 0 2px 8px rgba(0,0,0,.15); transition: transform .2s, box-shadow .2s, background .2s; display: flex; align-items: center; gap: .45rem; }
+    .float-donate:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(122,44,56,.55); background: var(--maroon-mid); }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .method-grid { grid-template-columns: 1fr 1fr; }
+      .team-grid   { grid-template-columns: 1fr 1fr; }
+      .ds-grid     { grid-template-columns: 1fr 1fr; }
+      .hc-cameras  { padding: 0 2rem; gap: 1rem; }
+      .hc-bottom   { padding: 1rem 2rem 2.5rem; }
+    }
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      section, .reserve, footer { padding: 4rem 1.5rem; }
+      /* Camera hero mobile */
+      .hero-camera { min-height: auto; }
+      .hc-cameras { grid-template-columns: 1fr; padding: 0 1.5rem; gap: .8rem; }
+      .hc-cam-side { display: none; }
+      .hc-cam-center .hc-frame { height: 280px; }
+      .hc-bottom { grid-template-columns: 1fr; padding: 1rem 1.5rem 2.5rem; }
+      .hc-title { font-size: 2.8rem; }
+      /* Other sections */
+      .spotlight-content { grid-template-columns: 1fr; padding: 5rem 1.5rem; }
+      .spotlight-stats { flex-direction: row; flex-wrap: wrap; min-width: auto; width: 100%; }
+      .sp-stat { flex: 1; min-width: 120px; border-right: 1px solid rgba(74,168,194,.12); border-bottom: none; }
+      .sp-stat:last-child { border-right: none; }
+      .spotlight { min-height: 70vh; }
+      .about-wrap, .impact-inner, .faq-wrap, .contact-wrap, .reserve-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .bento { grid-template-columns: 1fr 1fr; grid-auto-rows: auto; }
+      .bc-1,.bc-2,.bc-3,.bc-4,.bc-5,.bc-6 { grid-column: span 2; min-height: 200px; }
+      .act-grid { grid-template-columns: 1fr; gap: .75rem; }
+      .act-cell { min-height: 240px; }
+      .blog-grid, .team-grid { grid-template-columns: 1fr; }
+      .gal-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .gi-1 { grid-column: span 2; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .nl-inner { grid-template-columns: 1fr; }
+      .newsletter { padding: 3.5rem 1.5rem; }
+      .data-strip { padding: 2.5rem 1.5rem; }
+      .float-donate { bottom: 1rem; right: 1rem; padding: .65rem 1.2rem; font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2021/12/LOGO-HORIZONTAL_COLOR-e1774605312937.png" alt="SOC - Sociedad Ornitológica de Córdoba" />
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sobre">Misión</a></li>
+    <li><a href="#proyectos">Proyectos</a></li>
+    <li><a href="#galeria">Galería</a></li>
+    <li><a href="#equipo">Equipo</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+    <li><a href="#contacto" class="nav-cta">Donar →</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Abrir menú">
+    <div class="ham-line"></div><div class="ham-line"></div><div class="ham-line"></div>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#sobre">Misión</a>
+  <a href="#proyectos">Proyectos</a>
+  <a href="#galeria">Galería</a>
+  <a href="#equipo">Equipo</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contacto">Contacto</a>
+  <a href="#contacto" class="mm-donate">Donar →</a>
+</div>
+
+<!-- ════════════ HERO CAMERA TRAP ════════════ -->
+<section class="hero-camera">
+
+  <!-- Dark forest background -->
+  <div class="hc-bg">
+    <img src="https://images.unsplash.com/photo-1536431311719-398b6704d4cc?auto=format&fit=crop&w=1600&q=80" alt="" fetchpriority="high" />
+    <div class="hc-bg-veil"></div>
+  </div>
+
+  <!-- Top label -->
+  <div class="hc-topbar">
+    <span class="hc-topbar-label">Conservación · Monitoreo de Biodiversidad · Caribe Colombiano</span>
+  </div>
+
+  <!-- Three camera panels -->
+  <div class="hc-cameras">
+
+    <!-- Camera 01 — Paujil -->
+    <div class="hc-cam hc-cam-left">
+      <div class="hc-cam-label">Cámara 01</div>
+      <div class="hc-dash"></div>
+      <div class="hc-frame">
+        <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2024/01/DSC_2545-768x512.jpg" alt="Monitoreo de campo SOC" loading="eager" />
+        <div class="hc-species-tag">Crax alberti</div>
+      </div>
+    </div>
+
+    <!-- Camera 02 — Center main (viewfinder) -->
+    <div class="hc-cam hc-cam-center">
+      <div class="hc-cam-label">Cámara 02</div>
+      <div class="hc-dash"></div>
+      <div class="hc-frame">
+        <!-- Viewfinder UI -->
+        <div class="hc-viewfinder">
+          <div class="vf-corner vf-tl"></div>
+          <div class="vf-corner vf-tr"></div>
+          <div class="vf-corner vf-bl"></div>
+          <div class="vf-corner vf-br"></div>
+          <div class="vf-cross-h"></div>
+          <div class="vf-cross-v"></div>
+          <div class="vf-scan"></div>
+        </div>
+        <img src="https://images.unsplash.com/photo-1444927714506-8492d94b4e3d?auto=format&fit=crop&w=800&q=85" alt="Ave tropical — monitoreo activo" loading="eager" />
+        <div class="hc-badges">
+          <span class="hc-badge hc-badge-id"><span class="hc-badge-dot"></span>Especie identificada</span>
+          <span class="hc-badge">Monitoreo activo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Camera 03 — Guacamaya -->
+    <div class="hc-cam hc-cam-right">
+      <div class="hc-cam-label">Cámara 03</div>
+      <div class="hc-dash"></div>
+      <div class="hc-frame">
+        <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/11/20230627_SOC_Salidas-Ara-ambiguus_El-Diamante_Ara-ambiguus_YNG134-768x576.jpg" alt="Guacamaya Verde — Ara ambiguus" loading="eager" />
+        <div class="hc-species-tag">Ara ambiguus</div>
+      </div>
+    </div>
+
+  </div><!-- /hc-cameras -->
+
+  <!-- Bottom text -->
+  <div class="hc-bottom">
+    <div class="hc-left">
+      <span class="hc-eyebrow">Ciencia de campo · SOC Colombia</span>
+      <h1 class="hc-title">Guardianes<br>del Caribe.</h1>
+    </div>
+    <div class="hc-right">
+      <p class="hc-desc">La SOC protege las aves más amenazadas mediante monitoreo continuo con cámaras trampa e investigación científica en los bosques del Caribe colombiano.</p>
+      <a href="#proyectos" class="hc-read">Explorar proyectos ↗</a>
+      <div class="hc-dot-nav">
+        <span class="hc-dot active"></span>
+        <span class="hc-dot"></span>
+        <span class="hc-dot"></span>
+      </div>
+    </div>
+  </div>
+
+</section><!-- /hero-camera -->
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Conservación <span class="msep">✦</span></span>
+    <span class="marquee-item">Investigación científica <span class="msep">✦</span></span>
+    <span class="marquee-item">Restauración de hábitats <span class="msep">✦</span></span>
+    <span class="marquee-item">Paujil de Pico Azul <span class="msep">✦</span></span>
+    <span class="marquee-item">Trabajo comunitario <span class="msep">✦</span></span>
+    <span class="marquee-item">Aviturismo sostenible <span class="msep">✦</span></span>
+    <span class="marquee-item">Reserva La Cristalina <span class="msep">✦</span></span>
+    <span class="marquee-item">Caribe colombiano <span class="msep">✦</span></span>
+    <span class="marquee-item">Conservación <span class="msep">✦</span></span>
+    <span class="marquee-item">Investigación científica <span class="msep">✦</span></span>
+    <span class="marquee-item">Restauración de hábitats <span class="msep">✦</span></span>
+    <span class="marquee-item">Paujil de Pico Azul <span class="msep">✦</span></span>
+    <span class="marquee-item">Trabajo comunitario <span class="msep">✦</span></span>
+    <span class="marquee-item">Aviturismo sostenible <span class="msep">✦</span></span>
+    <span class="marquee-item">Reserva La Cristalina <span class="msep">✦</span></span>
+    <span class="marquee-item">Caribe colombiano <span class="msep">✦</span></span>
+  </div>
+</div>
+
+<!-- ESPECIE BANDERA -->
+<section class="spotlight" id="especie">
+  <div class="spotlight-media">
+    <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2026/03/Vista-Aerea-infraestructura-2-1024x768.jpg" alt="Reserva La Cristalina — vista aérea" loading="lazy" />
+  </div>
+  <div class="spotlight-veil"></div>
+  <div class="spotlight-content">
+    <div class="spotlight-left">
+      <div class="spotlight-badge"><div class="badge-dot"></div>Especie bandera</div>
+      <h2 class="spotlight-title">Paujil de<br><em>Pico Azul</em></h2>
+      <p class="spotlight-sci">Crax alberti — En Peligro Crítico · UICN</p>
+      <p class="spotlight-desc">Una de las aves más amenazadas de Colombia. Con menos de 2.500 individuos estimados en vida silvestre, el Paujil de Pico Azul habita los bosques húmedos del Caribe colombiano. La SOC lidera el único programa de conservación activa de la especie en el departamento de Córdoba.</p>
+      <a href="#proyectos" class="btn btn-white">Ver proyecto completo →</a>
+    </div>
+    <div class="spotlight-stats">
+      <div class="sp-stat"><span class="sp-num">&lt;2.500</span><span class="sp-lbl">Individuos estimados</span></div>
+      <div class="sp-stat"><span class="sp-num">CR</span><span class="sp-lbl">Categoría UICN</span></div>
+      <div class="sp-stat"><span class="sp-num">10+</span><span class="sp-lbl">Años de monitoreo SOC</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE NOSOTROS -->
+<section class="about" id="sobre">
+  <div class="container">
+    <div class="about-wrap">
+      <div class="about-text reveal">
+        <span class="eyebrow">Quiénes somos</span>
+        <h2 class="st">Ciencia que<br>protege vida.</h2>
+        <p class="lead">Somos una organización colombiana dedicada a la conservación de aves amenazadas en el Caribe. Unimos investigación rigurosa, restauración activa de ecosistemas y comunidades locales como protagonistas del cambio.</p>
+        <div class="big-stats">
+          <div class="bs-item"><span class="num" data-count="15">0</span><div class="lbl">Especies monitoreadas</div></div>
+          <div class="bs-item"><span class="num" data-count="6">0</span><div class="lbl">Proyectos activos</div></div>
+          <div class="bs-item"><span class="num" data-count="10">0</span><div class="lbl">Años en campo</div></div>
+        </div>
+      </div>
+      <div class="pillars reveal">
+        <div class="pil"><div class="pil-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M6 18h8M3 22h18M14 22a7 7 0 1 0 0-14h-1M9 10v8M7.5 6.5V10a1.5 1.5 0 0 0 3 0V6.5"/></svg></div><div><div class="pil-title">Investigación científica</div><div class="pil-desc">Monitoreo de especies, modelado de hábitats y expediciones de redescubrimiento con metodología rigurosa.</div></div></div>
+        <div class="pil"><div class="pil-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div><div><div class="pil-title">Restauración de ecosistemas</div><div class="pil-desc">Viveros nativos, anidación artificial y recuperación activa de bosques degradados del Caribe colombiano.</div></div></div>
+        <div class="pil"><div class="pil-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div><div class="pil-title">Comunidades guardianas</div><div class="pil-desc">Formación de líderes ambientales locales como actores centrales de la conservación territorial.</div></div></div>
+        <div class="pil"><div class="pil-ico"><svg class="ico" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg></div><div><div class="pil-title">Asesoría técnica</div><div class="pil-desc">Apoyo a ONGs, empresas y gobiernos en proyectos de biodiversidad y sostenibilidad.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACTO -->
+<section class="impact">
+  <div class="container">
+    <div class="impact-inner">
+      <div class="impact-copy reveal">
+        <span class="eyebrow">Impacto real</span>
+        <h2 class="st">Números que<br>hablan por sí solos.</h2>
+        <p class="lead">Cada cifra representa años de trabajo de campo, alianzas comunitarias y decisiones basadas en evidencia científica.</p>
+        <div class="bar-list">
+          <div class="bar-item"><div class="bar-header"><span class="bar-name">Cobertura de monitoreo</span><span class="bar-val">92%</span></div><div class="bar-track"><div class="bar-fill" style="--w:.92"></div></div></div>
+          <div class="bar-item"><div class="bar-header"><span class="bar-name">Restauración de hábitat</span><span class="bar-val">78%</span></div><div class="bar-track"><div class="bar-fill" style="--w:.78"></div></div></div>
+          <div class="bar-item"><div class="bar-header"><span class="bar-name">Comunidades formadas</span><span class="bar-val">65%</span></div><div class="bar-track"><div class="bar-fill" style="--w:.65"></div></div></div>
+        </div>
+      </div>
+      <div class="impact-grid reveal">
+        <div class="impact-cell"><div class="impact-num" data-count="500">0</div><div class="impact-label">Hectáreas de bosque bajo monitoreo activo</div></div>
+        <div class="impact-cell"><div class="impact-num" data-count="120">0</div><div class="impact-label">Individuos de Paujil registrados</div></div>
+        <div class="impact-cell"><div class="impact-num" data-count="30">0</div><div class="impact-label">Guardias ambientales formados</div></div>
+        <div class="impact-cell"><div class="impact-num" data-count="8">0</div><div class="impact-label">Publicaciones científicas</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA STRIP -->
+<div class="data-strip">
+  <div class="ds-grid">
+    <div class="ds-item"><div class="ds-icon"><svg class="ico" viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></div><div><span class="ds-num">500+ ha</span><span class="ds-label">Bosque bajo monitoreo</span></div></div>
+    <div class="ds-item"><div class="ds-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></div><div><span class="ds-num">15</span><span class="ds-label">Especies amenazadas</span></div></div>
+    <div class="ds-item"><div class="ds-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div><span class="ds-num">30+</span><span class="ds-label">Guardias ambientales</span></div></div>
+    <div class="ds-item"><div class="ds-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div><span class="ds-num">8</span><span class="ds-label">Publicaciones científicas</span></div></div>
+  </div>
+</div>
+
+<!-- PROYECTOS -->
+<section class="projects" id="proyectos">
+  <div class="container">
+    <span class="eyebrow">Conservación activa</span>
+    <h2 class="st">Proyectos bandera</h2>
+    <div class="bento reveal">
+
+      <!-- Paujil de Pico Azul — featured large card -->
+      <div class="bc bc-1">
+        <div class="bc-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2022/10/DSCN9551-768x576.jpg" alt="Paujil de Pico Azul — Crax alberti" loading="lazy" />
+        </div>
+        <div class="bc-overlay"></div>
+        <div class="bc-content">
+          <div class="bc-tag">Ave emblema</div>
+          <div class="bc-name">Paujil de Pico Azul</div>
+          <div class="bc-sci">Crax alberti</div>
+          <div class="bc-text">Una de las aves más amenazadas de Colombia. Reproducción asistida y protección de nidos en los bosques de Córdoba.</div>
+          <a href="#contacto" class="bc-link">Conocer más →</a>
+        </div>
+      </div>
+
+      <!-- Águila Bicolor -->
+      <div class="bc bc-2">
+        <div class="bc-photo">
+          <img src="https://images.unsplash.com/photo-1589802829985-817e51171b92?auto=format&fit=crop&w=700&q=85" alt="Águila Bicolor — Morphnus guianensis" loading="lazy" />
+        </div>
+        <div class="bc-overlay"></div>
+        <div class="bc-content">
+          <div class="bc-tag">Grandes rapaces</div>
+          <div class="bc-name">Águila Bicolor</div>
+          <div class="bc-sci">Morphnus guianensis</div>
+          <div class="bc-text">Distribución y ecología en el Caribe colombiano.</div>
+          <a href="#contacto" class="bc-link">Ver más →</a>
+        </div>
+      </div>
+
+      <!-- Guacamaya Verde -->
+      <div class="bc bc-3">
+        <div class="bc-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/11/20230627_SOC_Salidas-Ara-ambiguus_El-Diamante_Ara-ambiguus_YNG134-768x576.jpg" alt="Guacamaya Verde — Ara ambiguus" loading="lazy" />
+        </div>
+        <div class="bc-overlay"></div>
+        <div class="bc-content">
+          <div class="bc-tag">Psitácidas</div>
+          <div class="bc-name">Guacamaya Verde</div>
+          <div class="bc-sci">Ara ambiguus</div>
+          <a href="#contacto" class="bc-link">Ver más →</a>
+        </div>
+      </div>
+
+      <!-- Lorito del Sinú -->
+      <div class="bc bc-4">
+        <div class="bc-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/01/Lorito-del-Sin%C3%BA-final-e1702502389395-856x1024.jpg" alt="Lorito del Sinú" loading="lazy" />
+        </div>
+        <div class="bc-overlay"></div>
+        <div class="bc-content">
+          <div class="bc-tag">Redescubrimiento</div>
+          <div class="bc-name">Lorito del Sinú</div>
+          <div class="bc-text">Expedición de búsqueda del esquivo lorito endémico.</div>
+          <a href="#contacto" class="bc-link">Ver más →</a>
+        </div>
+      </div>
+
+      <!-- Cerro Murrucucú -->
+      <div class="bc bc-5">
+        <div class="bc-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/03/DSCN0569.jpg" alt="Cerro Murrucucú" loading="lazy" />
+        </div>
+        <div class="bc-overlay"></div>
+        <div class="bc-content">
+          <div class="bc-tag">Exploración</div>
+          <div class="bc-name">Cerro Murrucucú</div>
+          <div class="bc-text">Inventarios biológicos en los últimos bosques montanos del norte de Colombia.</div>
+          <a href="#contacto" class="bc-link">Ver más →</a>
+        </div>
+      </div>
+
+      <!-- Ruta Garza Agamí -->
+      <div class="bc bc-6">
+        <div class="bc-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/04/DSCN6813-1024x768.jpg" alt="Ruta Garza Agamí — humedales de Córdoba" loading="lazy" />
+        </div>
+        <div class="bc-overlay"></div>
+        <div class="bc-content">
+          <div class="bc-tag">Ecoturismo</div>
+          <div class="bc-name">Ruta Garza Agamí</div>
+          <div class="bc-text">Aviturismo sostenible en los humedales de Córdoba que genera ingresos para comunidades locales guardianas.</div>
+          <a href="#contacto" class="bc-link">Ver más →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- METODOLOGÍA -->
+<section class="method">
+  <div class="container">
+    <span class="eyebrow">Cómo trabajamos</span>
+    <h2 class="st">Nuestra metodología</h2>
+    <div class="method-grid reveal">
+      <div class="mcard"><div class="mcard-num">01</div><div class="mcard-icon"><svg class="ico" viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></div><div class="mcard-title">Diagnóstico territorial</div><div class="mcard-desc">Evaluamos el estado actual de las poblaciones, hábitats y presiones humanas mediante observación directa y datos históricos.</div></div>
+      <div class="mcard"><div class="mcard-num">02</div><div class="mcard-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="mcard-title">Investigación y monitoreo</div><div class="mcard-desc">Implementamos protocolos científicos estandarizados para registrar cambios poblacionales y del ecosistema a lo largo del tiempo.</div></div>
+      <div class="mcard"><div class="mcard-num">03</div><div class="mcard-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M12 22V12"/><path d="M12 12C12 6.477 16.477 2 22 2c0 5.523-4.477 10-10 10z"/><path d="M12 12C12 7.029 7.029 2 2 2c0 5.523 4.477 10 10 10z"/></svg></div><div class="mcard-title">Intervención activa</div><div class="mcard-desc">Restauramos hábitats, instalamos nidos artificiales y producimos plántulas nativas para recuperar ecosistemas degradados.</div></div>
+      <div class="mcard"><div class="mcard-num">04</div><div class="mcard-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div><div class="mcard-title">Incidencia y comunidad</div><div class="mcard-desc">Formamos líderes locales, comunicamos hallazgos a tomadores de decisiones y promovemos el aviturismo como economía alternativa.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVIDADES -->
+<section class="activities" id="actividades">
+  <div class="container">
+    <span class="eyebrow">Lo que hacemos</span>
+    <h2 class="st">Programas activos</h2>
+    <div class="act-grid reveal">
+
+      <!-- 01 Monitoreo -->
+      <div class="act-cell">
+        <div class="act-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2024/01/DSC_2545-768x512.jpg" alt="Monitoreo de especies en campo" loading="lazy" />
+        </div>
+        <div class="act-photo-overlay"></div>
+        <div class="act-content">
+          <div class="act-num">01</div>
+          <div class="act-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="act-title">Monitoreo de Especies</div>
+          <div class="act-desc">Seguimiento poblacional con metodologías estandarizadas en campo.</div>
+        </div>
+      </div>
+
+      <!-- 02 Viveros -->
+      <div class="act-cell">
+        <div class="act-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2022/10/WhatsApp-Image-2022-04-02-at-6.35.16-PM-1024x768.jpeg" alt="Viveros de especies nativas" loading="lazy" />
+        </div>
+        <div class="act-photo-overlay"></div>
+        <div class="act-content">
+          <div class="act-num">02</div>
+          <div class="act-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M12 22V12"/><path d="M12 12C12 6.477 16.477 2 22 2c0 5.523-4.477 10-10 10z"/><path d="M12 12C12 7.029 7.029 2 2 2c0 5.523 4.477 10 10 10z"/></svg></div>
+          <div class="act-title">Viveros Nativos</div>
+          <div class="act-desc">Producción de flora nativa para restauración activa de bosques caribeños.</div>
+        </div>
+      </div>
+
+      <!-- 03 Educación -->
+      <div class="act-cell">
+        <div class="act-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2021/12/28a885a0-2803-4508-941f-8dfc45979511-768x432.jpg" alt="Educación ambiental comunitaria" loading="lazy" />
+        </div>
+        <div class="act-photo-overlay"></div>
+        <div class="act-content">
+          <div class="act-num">03</div>
+          <div class="act-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+          <div class="act-title">Educación Ambiental</div>
+          <div class="act-desc">Talleres y programas para formar líderes ambientales comunitarios.</div>
+        </div>
+      </div>
+
+      <!-- 04 Reserva -->
+      <div class="act-cell">
+        <div class="act-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2026/03/Vista-general-casa-2-1024x771.jpg" alt="Reserva Natural La Cristalina" loading="lazy" />
+        </div>
+        <div class="act-photo-overlay"></div>
+        <div class="act-content">
+          <div class="act-num">04</div>
+          <div class="act-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <div class="act-title">Reserva La Cristalina</div>
+          <div class="act-desc">Laboratorio de campo y centro de formación ambiental para investigadores y guías.</div>
+        </div>
+      </div>
+
+      <!-- 05 Asesoría -->
+      <div class="act-cell">
+        <div class="act-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2022/11/IMG_20220728_150504-768x432.jpg" alt="Asesoría técnica en biodiversidad" loading="lazy" />
+        </div>
+        <div class="act-photo-overlay"></div>
+        <div class="act-content">
+          <div class="act-num">05</div>
+          <div class="act-ico"><svg class="ico" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+          <div class="act-title">Asesoría Técnica</div>
+          <div class="act-desc">Apoyo especializado a organizaciones y gobiernos en biodiversidad.</div>
+        </div>
+      </div>
+
+      <!-- 06 Aviturismo -->
+      <div class="act-cell">
+        <div class="act-photo">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2021/12/song_wren_-_cyphorhinus_phaeocephalus_3_carlos_bran-castrillon_-_uraba_nature_tours-768x512.jpg" alt="Aviturismo sostenible en Córdoba" loading="lazy" />
+        </div>
+        <div class="act-photo-overlay"></div>
+        <div class="act-content">
+          <div class="act-num">06</div>
+          <div class="act-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></div>
+          <div class="act-title">Aviturismo Sostenible</div>
+          <div class="act-desc">Rutas de observación que generan valor económico para comunidades guardianas.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- GALERÍA -->
+<section class="gallery" id="galeria">
+  <div class="container">
+    <div class="gallery-head">
+      <div><span class="eyebrow">En campo</span><h2 class="st">Nuestra galería</h2></div>
+      <a href="#contacto" class="gal-more">Ver todas las fotos →</a>
+    </div>
+    <div class="gal-grid reveal">
+      <div class="gal-item gi-1">
+        <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/11/20230627_SOC_Salidas-Ara-ambiguus_El-Diamante_Ara-ambiguus_YNG134-768x576.jpg" alt="Guacamaya Verde — Ara ambiguus" loading="lazy" />
+        <div class="gal-label">Guacamaya Verde en su hábitat natural</div>
+      </div>
+      <div class="gal-item gi-2">
+        <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2024/01/DSC_2545-768x512.jpg" alt="Investigación de campo SOC" loading="lazy" />
+        <div class="gal-label">Investigación de campo</div>
+      </div>
+      <div class="gal-item gi-3">
+        <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/04/DSCN6813-768x576.jpg" alt="Trabajo de campo SOC" loading="lazy" />
+        <div class="gal-label">Monitoreo de especies</div>
+      </div>
+      <div class="gal-item gi-4">
+        <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2026/03/Vista-general-casa-2-1024x771.jpg" alt="Reserva La Cristalina" loading="lazy" />
+        <div class="gal-label">Reserva La Cristalina</div>
+      </div>
+      <div class="gal-item gi-5">
+        <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2022/11/IMG-20220807-WA0046-768x432.jpg" alt="Guardianes ambientales" loading="lazy" />
+        <div class="gal-label">Formación de guardianes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="blog" id="blog">
+  <div class="container">
+    <div class="blog-head">
+      <div><span class="eyebrow">Noticias y ciencia</span><h2 class="st">Últimas publicaciones</h2></div>
+      <a href="#contacto" class="gal-more">Ver blog completo →</a>
+    </div>
+    <div class="blog-grid reveal">
+      <div class="blog-card">
+        <div class="blog-thumb">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2024/01/DSC_2545-768x512.jpg" alt="Investigación Paujil" loading="lazy" />
+        </div>
+        <div class="blog-body">
+          <div class="blog-meta"><span class="blog-category">Investigación</span><span>Marzo 2025</span></div>
+          <div class="blog-title">Nuevo registro de Paujil de Pico Azul en sur de Córdoba</div>
+          <div class="blog-excerpt">Un equipo de investigadores registró individuos en una nueva zona, ampliando el área de distribución conocida de la especie.</div>
+          <div class="blog-footer"><span class="blog-author">Equipo SOC</span><a href="#contacto" class="blog-read">Leer →</a></div>
+        </div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2026/03/WhatsApp-Image-2025-05-26-at-12.57.28-PM-2-2-1024x771.jpg" alt="Restauración La Cristalina" loading="lazy" />
+        </div>
+        <div class="blog-body">
+          <div class="blog-meta"><span class="blog-category">Restauración</span><span>Febrero 2025</span></div>
+          <div class="blog-title">5.000 plántulas nativas sembradas en La Cristalina</div>
+          <div class="blog-excerpt">La temporada de siembra alcanzó un hito histórico con la participación activa de 18 familias guardianas del territorio.</div>
+          <div class="blog-footer"><span class="blog-author">Equipo SOC</span><a href="#contacto" class="blog-read">Leer →</a></div>
+        </div>
+      </div>
+      <div class="blog-card">
+        <div class="blog-thumb">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/11/20230627_SOC_Salidas-Ara-ambiguus_El-Diamante_Ara-ambiguus_YNG134-768x576.jpg" alt="Ruta Garza Agamí" loading="lazy" />
+        </div>
+        <div class="blog-body">
+          <div class="blog-meta"><span class="blog-category">Ecoturismo</span><span>Enero 2025</span></div>
+          <div class="blog-title">La Ruta Garza Agamí recibe primer grupo internacional</div>
+          <div class="blog-excerpt">Birders de tres países recorrieron los humedales de Córdoba generando ingresos directos para seis familias locales.</div>
+          <div class="blog-footer"><span class="blog-author">Equipo SOC</span><a href="#contacto" class="blog-read">Leer →</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPO -->
+<section class="team" id="equipo">
+  <div class="container">
+    <span class="eyebrow">Las personas detrás</span>
+    <h2 class="st">Nuestro equipo</h2>
+    <div class="team-grid reveal">
+      <div class="team-card">
+        <div class="team-avatar">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/elementor/thumbs/hugo-final-scaled-pk3hqmzc53e5kpnqfwp1h67v4afmiqeihmnlft1d7a.jpg" alt="Hugo Alejandro Herrera" loading="lazy" />
+        </div>
+        <div class="team-info">
+          <div class="team-name">Hugo Alejandro Herrera</div>
+          <div class="team-role">Presidente · Ingeniero Agrónomo</div>
+          <div class="team-bio">Miembro fundador de la SOC. Agrónomo y fotógrafo aficionado con profundo conocimiento del territorio del Caribe colombiano.</div>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2022/02/isa-final.jpg" alt="Yulisa Navarro" loading="lazy" />
+        </div>
+        <div class="team-info">
+          <div class="team-name">Yulisa Navarro</div>
+          <div class="team-role">Bióloga Ornitóloga · Secretaria</div>
+          <div class="team-bio">Miembro fundadora. Lidera el proyecto de conservación de la Guacamaya Verde (Ara ambiguus) en Córdoba.</div>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/elementor/thumbs/WhatsApp-Image-2022-02-12-at-2.21.47-AM-pkewm0xq8jordkcd4kep7m8dzhkew16q478ci9p79y.jpeg" alt="Nora Jiménez" loading="lazy" />
+        </div>
+        <div class="team-info">
+          <div class="team-name">Nora Jiménez</div>
+          <div class="team-role">Ing. Agrónoma · Tesorera</div>
+          <div class="team-bio">Miembro fundadora. Entomóloga con vasta experiencia en gestión de recursos naturales en el departamento de Córdoba.</div>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">
+          <img src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2023/12/1702477189497.jpg" alt="Hugo Vides Avilez" loading="lazy" />
+        </div>
+        <div class="team-info">
+          <div class="team-name">Hugo Vides Avilez</div>
+          <div class="team-role">Biólogo · Director de Proyectos</div>
+          <div class="team-bio">Biólogo con maestría en Ciencias Ambientales. Lidera la estrategia científica y los proyectos de campo de la SOC.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALIADOS -->
+<section class="allies">
+  <div class="container">
+    <div class="allies-wrap reveal">
+      <span class="eyebrow">Red de apoyo</span>
+      <h2 class="st">Nuestros aliados</h2>
+      <p class="lead">Trabajamos con organizaciones locales, nacionales e internacionales comprometidas con la conservación de la biodiversidad colombiana.</p>
+      <div class="allies-row">
+        <div class="ally-chip"><span class="ally-emoji">🌍</span>BirdLife International</div>
+        <div class="ally-chip"><span class="ally-emoji">🦜</span>ProAves Colombia</div>
+        <div class="ally-chip"><span class="ally-emoji">🏛️</span>Ministerio de Ambiente</div>
+        <div class="ally-chip"><span class="ally-emoji">🎓</span>Universidad de Córdoba</div>
+        <div class="ally-chip"><span class="ally-emoji">🌱</span>Fondo Acción Ambiental</div>
+        <div class="ally-chip"><span class="ally-emoji">🔭</span>Instituto Humboldt</div>
+        <div class="ally-chip"><span class="ally-emoji">🤝</span>WCS Colombia</div>
+        <div class="ally-chip"><span class="ally-emoji">📸</span>Comunidades locales</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESERVA CTA -->
+<div class="reserve">
+  <div class="reserve-inner">
+    <div class="reserve-text reveal">
+      <span class="eyebrow">Nuestro laboratorio</span>
+      <div class="reserve-title">La Cristalina:<br><span>donde la ciencia abraza el bosque.</span></div>
+      <p class="reserve-desc">Nuestra reserva natural es el corazón de la formación ambiental en el Caribe colombiano. Investigadores, guías y comunidades aprenden aquí a proteger la vida silvestre.</p>
+      <div class="reserve-btns">
+        <a href="#contacto" class="btn btn-white">Visitar la reserva →</a>
+        <a href="#contacto" class="btn btn-outline-w">Apoyar el proyecto</a>
+      </div>
+    </div>
+    <div class="reserve-features reveal">
+      <div class="rf"><div class="rf-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div><div><div class="rf-title">Centro de formación</div><div class="rf-desc">Capacitación para investigadores, guías certificados y líderes ambientales.</div></div></div>
+      <div class="rf"><div class="rf-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M6 18h8M3 22h18M14 22a7 7 0 1 0 0-14h-1M9 10v8M7.5 6.5V10a1.5 1.5 0 0 0 3 0V6.5"/></svg></div><div><div class="rf-title">Laboratorio de campo</div><div class="rf-desc">Infraestructura para monitoreo, colecta y procesamiento de datos biológicos.</div></div></div>
+      <div class="rf"><div class="rf-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div><div><div class="rf-title">Vivero de restauración</div><div class="rf-desc">Producción masiva de plántulas nativas para recuperar bosques degradados.</div></div></div>
+      <div class="rf"><div class="rf-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg></div><div><div class="rf-title">Punto de aviturismo</div><div class="rf-desc">Base de operaciones para rutas de observación de aves con guías certificados.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="faq-wrap">
+      <div class="reveal">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2 class="st">¿Tienes dudas?<br>Aquí respondemos.</h2>
+        <p class="lead" style="margin-top:.8rem;">Si no encuentras lo que buscas, escríbenos directamente.</p>
+      </div>
+      <div class="faq-list reveal">
+        <div class="faq-item open">
+          <button class="faq-q">¿Cómo puedo ser voluntario en la SOC? <span class="faq-icon">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Puedes postularte a través de nuestro formulario de contacto indicando tu perfil, disponibilidad y área de interés (investigación, educación o restauración). Evaluamos las solicitudes periódicamente y te contactamos para una entrevista.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">¿Cómo funciona la Ruta Garza Agamí? <span class="faq-icon">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">La ruta es un recorrido de aviturismo guiado por los humedales de Córdoba. Está operada por guías locales certificados. Puedes reservar tu lugar escribiéndonos. Los ingresos se distribuyen directamente entre las familias guardianas del territorio.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">¿Puedo visitar la Reserva La Cristalina? <span class="faq-icon">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Sí. La reserva recibe visitantes con propósitos educativos, científicos y ecoturísticos. Las visitas deben coordinarse previamente con nuestro equipo para garantizar la disponibilidad y un acompañamiento adecuado.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">¿Cómo puedo apoyar económicamente? <span class="faq-icon">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Aceptamos donaciones individuales y corporativas. También puedes apoyarnos participando en nuestras rutas de ecoturismo, adquiriendo nuestros materiales divulgativos o estableciendo una alianza institucional. Contáctanos para más información.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">¿Hacen investigación con universidades? <span class="faq-icon">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Sí. Colaboramos activamente con la Universidad de Córdoba y otras instituciones académicas. Si eres estudiante o investigador interesado en desarrollar un proyecto conjunto, comunícate con nosotros y evaluamos las posibilidades de colaboración.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <div class="nl-inner">
+    <div>
+      <span class="eyebrow nl-eyebrow">Mantente informado</span>
+      <h3 class="nl-title">Noticias de conservación<br>directo a tu correo</h3>
+      <p class="nl-desc">Registros de campo, nuevas publicaciones y oportunidades de participación en la conservación del Caribe colombiano.</p>
+    </div>
+    <div>
+      <div class="nl-form">
+        <input type="email" class="nl-input" placeholder="tucorreo@ejemplo.com" />
+        <button class="nl-btn">Suscribirme →</button>
+      </div>
+      <p style="font-size:.72rem;color:rgba(255,255,255,.22);margin-top:.9rem;">Sin spam. Puedes darte de baja en cualquier momento.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="contact" id="contacto">
+  <div class="container">
+    <div class="contact-wrap">
+      <div class="reveal">
+        <span class="eyebrow">Hablemos</span>
+        <h2 class="st">Únete a<br>la misión.</h2>
+        <p class="lead">Ya seas investigador, voluntario, empresa o simplemente alguien que ama las aves — hay un lugar para ti en la SOC.</p>
+        <div class="cinfo-stack">
+          <div class="cinfo-row"><div class="cinfo-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l1.12-1.12a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><div class="cinfo-lbl">Teléfono</div><div class="cinfo-val"><a href="tel:+573157553321">(+57) 315 755 3321</a></div></div></div>
+          <div class="cinfo-row"><div class="cinfo-ico"><svg class="ico" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div><div><div class="cinfo-lbl">Correo</div><div class="cinfo-val"><a href="mailto:sociedadornitologicadecordoba@gmail.com">sociedadornitologicadecordoba@gmail.com</a></div></div></div>
+          <div class="cinfo-row"><div class="cinfo-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="cinfo-lbl">Ubicación</div><div class="cinfo-val">Montería, Córdoba, Colombia</div></div></div>
+        </div>
+        <div class="social-row">
+          <a href="https://sociedadornitologicadecordoba.org/" target="_blank" class="sc-chip"><svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Web</a>
+          <a href="#" class="sc-chip"><svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> Facebook</a>
+          <a href="#" class="sc-chip"><svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> Instagram</a>
+          <a href="#" class="sc-chip"><svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg> YouTube</a>
+        </div>
+      </div>
+      <div class="form-box reveal">
+        <div class="form-title">Envíanos un mensaje</div>
+        <div class="form-row">
+          <div class="fg"><label>Nombre</label><input type="text" placeholder="Tu nombre" /></div>
+          <div class="fg"><label>Correo</label><input type="email" placeholder="tu@email.com" /></div>
+        </div>
+        <div class="fg"><label>Asunto</label>
+          <select>
+            <option>Voluntariado</option>
+            <option>Aviturismo / Reserva La Cristalina</option>
+            <option>Asesoría técnica</option>
+            <option>Donación</option>
+            <option>Investigación colaborativa</option>
+            <option>Prensa / Medios</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="fg"><label>Mensaje</label><textarea placeholder="Cuéntanos cómo quieres colaborar..."></textarea></div>
+        <button class="btn-submit">Enviar mensaje →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img class="footer-logo-img" src="https://sociedadornitologicadecordoba.org/wp-content/uploads/2021/12/LOGO-HORIZONTAL_COLOR-e1774605312937.png" alt="SOC" />
+      <p class="footer-desc">Sociedad Ornitológica de Córdoba — protegiendo las aves y sus ecosistemas en el Caribe colombiano. Montería, Colombia.</p>
+      <div class="footer-socials">
+        <a href="https://sociedadornitologicadecordoba.org/" target="_blank" class="footer-social" title="Web"><svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>
+        <a href="#" class="footer-social" title="Facebook"><svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" title="Instagram"><svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" title="YouTube"><svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Organización</h5>
+      <ul>
+        <li><a href="#sobre">Quiénes somos</a></li>
+        <li><a href="#equipo">Equipo</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Proyectos</h5>
+      <ul>
+        <li><a href="#proyectos">Paujil de Pico Azul</a></li>
+        <li><a href="#proyectos">Águila Bicolor</a></li>
+        <li><a href="#proyectos">Guacamaya Verde</a></li>
+        <li><a href="#proyectos">Ruta Garza Agamí</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Recursos</h5>
+      <ul>
+        <li><a href="https://sociedadornitologicadecordoba.org/" target="_blank">Sitio oficial</a></li>
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#galeria">Galería</a></li>
+        <li><a href="#contacto">Donaciones</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Sociedad Ornitológica de Córdoba. Todos los derechos reservados.</span>
+    <a href="https://sociedadornitologicadecordoba.org/" target="_blank">sociedadornitologicadecordoba.org</a>
+  </div>
+</footer>
+
+<!-- FLOATING DONATE -->
+<a href="#contacto" class="float-donate">♥ Donar</a>
+
+<script>
+  /* PROGRESS BAR */
+  const bar = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  });
+
+  /* SCROLL REVEAL */
+  const revealObs = new IntersectionObserver(
+    e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  /* COUNTER ANIMATION */
+  function animateCount(el) {
+    const target = +el.dataset.count;
+    const dur = 1600, step = 16;
+    const inc = target / (dur / step);
+    let cur = 0;
+    const t = setInterval(() => {
+      cur = Math.min(cur + inc, target);
+      el.textContent = Math.floor(cur);
+      if (cur >= target) clearInterval(t);
+    }, step);
+  }
+  const countObs = new IntersectionObserver(e => {
+    e.forEach(x => { if (x.isIntersecting) { x.target.querySelectorAll('[data-count]').forEach(animateCount); countObs.unobserve(x.target); } });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.about-text, .impact-inner').forEach(el => countObs.observe(el));
+
+  /* PROGRESS BARS */
+  const barObs = new IntersectionObserver(e => {
+    e.forEach(x => { if (x.isIntersecting) { x.target.querySelectorAll('.bar-fill').forEach(b => b.classList.add('filled')); barObs.unobserve(x.target); } });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.impact').forEach(el => barObs.observe(el));
+
+  /* FAQ ACCORDION */
+  document.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  /* HAMBURGER */
+  const ham = document.getElementById('hamburger');
+  const mob = document.getElementById('mobile-menu');
+  ham.addEventListener('click', () => {
+    ham.classList.toggle('open');
+    mob.classList.toggle('open');
+    document.body.style.overflow = mob.classList.contains('open') ? 'hidden' : '';
+  });
+  mob.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      ham.classList.remove('open');
+      mob.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  /* HIDE FLOAT DONATE NEAR FOOTER */
+  const fd = document.querySelector('.float-donate');
+  new IntersectionObserver(e => {
+    fd.style.opacity = e[0].isIntersecting ? '0' : '1';
+    fd.style.pointerEvents = e[0].isIntersecting ? 'none' : 'all';
+  }, { threshold: 0.1 }).observe(document.querySelector('footer'));
+</script>
+</body>
+</html>
